@@ -30,24 +30,19 @@ export const SHARED_DEFAULTS = {
 };
 
 export const PLAYER_DEFAULTS = {
-  MODEL: '/models/Player/Paladin.fbx',
-  ANIMATIONS: {
-    IDLE: 'Armature|Idle',
-    WALK: 'Armature|Walk',
-    NORMAL: 'Armature|Normal_Attack',
-    CROUCH: 'Armature|Crouch',
-    JUMP: 'Armature|Jump',
-    CROUCH_ATTACK: 'Armature|Crouch_Normal_Attack',
-    SPECIAL: 'Armature|Special_Attack',
+  MODELS: {
+    IDLE: '/models/Player/SolarSentinel/Idle_60FPS.fbx',
+    WALK: '/models/Player/SolarSentinel/Walking_60FPS.fbx',
+    SWAY: '/models/Player/SolarSentinel/Sway_60FPS.fbx',
+    JUMP: '/models/Player/SolarSentinel/Jump_60FPS.fbx',
   },
-  RAYCAST: {
-    SWORD_LENGTH: 2.0,
-    SWORD_SIDE_OFFSET: 0.4,
-    SPECIAL_DELAY: 0.3,
-    COLOR: 0x00ff00,
+  TEXTURES: {
+    COLOR: '/models/Player/SolarSentinel/textures/color.png',
+    METALLIC: '/models/Player/SolarSentinel/textures/metallic.png',
+    NORMAL: '/models/Player/SolarSentinel/textures/normal.png',
+    ROUGHNESS: '/models/Player/SolarSentinel/textures/roughness.png',
   },
-  ATTACK_SOUND: '/audio/paladin-attack.wav',
-  ATTACK_SOUND_DURATION_MS: 700,
+  IDLE_SWAY_DELAY: 3,
 };
 
 export const CONTROLS_DEFAULTS = {
@@ -74,52 +69,6 @@ export const CONTROLS_DEFAULTS = {
 
 export const BARBARIAN_DEFAULTS = {
   MODEL: '/models/Barbarian/XBot.fbx',
-  ANIMATIONS: {
-    NORMAL: '/models/Barbarian/PunchingWithoutSkin2.fbx',
-    JUMP: '/models/Barbarian/JumpingWithoutSkin.fbx',
-    LEFT_BLOCK: '/models/Barbarian/LeftBlockWithoutSkin.fbx',
-    RIGHT_BLOCK: '/models/Barbarian/RightBlockWithoutSkin.fbx',
-    KICK: '/models/Barbarian/KickingWithoutSkin.fbx',
-    DUCK: '/models/Barbarian/DuckingWithoutSkin.fbx',
-  },
-  JUMP: {
-    VELOCITY: 5,
-    GRAVITY: 12,
-  },
-  COLLIDERS: {
-    HAND: {
-      halfHeight: 0.01,
-      radius: 0.16,
-      position: [0, 0.4, 0.75] as const,
-      offset: { y: -0.89, z: 0 },
-    },
-  },
-  UTILITY_AI: {
-    /** Euclidean distance (m) within which the barbarian auto-attacks. */
-    ATTACK_RANGE: 1.2,
-    /**
-     * Min ms to hold ATTACK before re-evaluating distance.
-     * Must be >= attackSpeed (320 ms) so one full punch completes.
-     * Also used as the strategic-action defer window.
-     */
-    MIN_ATTACK_DURATION_MS: 400,
-    /** Server actions the utility AI must not cancel mid-animation. */
-    STRATEGIC_ACTIONS: ['JUMP'] as const,
-  },
-  enableBarbarianWalk: false,
-  barbarianWalkDurationMS: 500,
-  enableBarbarianAttack: false,
-  attackSpeed: CONTROLS_DEFAULTS.MECHANICS_TIMEOUT,
-  enableBarbarianJump: false,
-  jumpDurationMS: 1000,
-  enableBarbarianLeftBlock: false,
-  blockDurationMS: CONTROLS_DEFAULTS.MECHANICS_TIMEOUT,
-  enableBarbarianRightBlock: false,
-  rightBlockDurationMS: CONTROLS_DEFAULTS.MECHANICS_TIMEOUT,
-  enableBarbarianKick: false,
-  kickSpeed: CONTROLS_DEFAULTS.MECHANICS_TIMEOUT,
-  enableBarbarianDuck: false,
-  duckDurationMS: CONTROLS_DEFAULTS.MECHANICS_TIMEOUT,
 };
 
 export const GAME_DEFAULTS = {
