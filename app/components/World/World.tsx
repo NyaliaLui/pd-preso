@@ -13,7 +13,6 @@ import {
 
 import { ENVIRONMENT_DEFAULTS } from '@/app/constants';
 import { GrassBlock } from '@/app/components/World/GrassBlock';
-import { Boulder } from '@/app/components/World/Boulder';
 import { GrassPillar } from '@/app/components/World/GrassPillar';
 
 export { World };
@@ -22,9 +21,6 @@ const FLOOR_GROUPS = interactionGroups([4], [4, 5]);
 
 interface WorldProps {
   playerPositionRef: { current: THREE.Vector3 };
-  onBoulderRegister?: (id: string, mesh: THREE.Object3D) => void;
-  onBoulderUnregister?: (id: string) => void;
-  activeBoulderIds?: Set<string>;
 }
 
 const { width, screenFillCount, extraCount } = ENVIRONMENT_DEFAULTS.groundBlock;
@@ -35,17 +31,7 @@ const INITIAL_BLOCK_POSITIONS = Array.from(
   (_, i) => INITIAL_LEFTMOST_X + i * width,
 );
 
-const { spawnInterval } = ENVIRONMENT_DEFAULTS.platform;
-export const INITIAL_PLATFORM_POSITIONS = INITIAL_BLOCK_POSITIONS.filter(
-  (_, i) => (i + 1) % spawnInterval === 0,
-);
-
-function World({
-  playerPositionRef,
-  onBoulderRegister,
-  onBoulderUnregister,
-  activeBoulderIds,
-}: WorldProps) {
+function World({ playerPositionRef }: WorldProps) {
   const grass = useTexture(ENVIRONMENT_DEFAULTS.texture.ground);
   grass.wrapS = grass.wrapT = RepeatWrapping;
   grass.repeat.set(2, 2);
@@ -67,17 +53,6 @@ function World({
       {blockXPositionsRef.current.map((x) => (
         <GrassBlock key={x} x={x} texture={grass} />
       ))}
-      {INITIAL_PLATFORM_POSITIONS.map((x, i) => ({ id: `boulder-${i}`, x }))
-        .filter((b) => !activeBoulderIds || activeBoulderIds.has(b.id))
-        .map((b) => (
-          <Boulder
-            key={b.id}
-            id={b.id}
-            x={b.x}
-            onRegister={onBoulderRegister}
-            onUnregister={onBoulderUnregister}
-          />
-        ))}
       <GrassPillar x={INITIAL_BLOCK_POSITIONS[0]} texture={grass} count={3} />
       <GrassPillar
         x={INITIAL_BLOCK_POSITIONS[INITIAL_BLOCK_POSITIONS.length - 1]}

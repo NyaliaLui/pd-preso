@@ -16,7 +16,6 @@ import {
   GAME_DEFAULTS,
 } from '@/app/constants';
 import { KeyState } from '@/app/components/Player/hooks/useKeyboardControls';
-import { DebugSettings } from '@/app/components/hooks/useDebugSettings';
 import type { ClientPlayerState } from '@/app/ai/sharedTypes';
 
 const PLAYER_GROUND_GROUPS = interactionGroups([5], [4]);
@@ -24,7 +23,6 @@ const PLAYER_GROUND_GROUPS = interactionGroups([5], [4]);
 interface PlayerProps {
   keys: KeyState;
   onHit?: () => void;
-  settings: DebugSettings;
   playerPositionRef?: { current: THREE.Vector3 };
   playerStateRef?: { current: ClientPlayerState | null };
 }

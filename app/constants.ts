@@ -73,9 +73,7 @@ export const BARBARIAN_DEFAULTS = {
 
 export const GAME_DEFAULTS = {
   INITIAL_BARBARIAN_COUNT: 1,
-  INITIAL_BARBARIAN_HP: 1,
   PLAYER_MAX_HP: 100,
-  BOULDER_HP: 3,
 };
 
 export const DEFAULT_COLORS = {
