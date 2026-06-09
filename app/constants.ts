@@ -1,14 +1,10 @@
 import { Vector3 } from 'three';
 
 export const SHARED_DEFAULTS = {
-  ANIMATIONS: {
-    IDLE: '/models/IdleWithoutSkin.fbx',
-    WALK: '/models/WalkingWithoutSkin.fbx',
-  },
-  MOVE_SPEED: 3,
+  MOVE_SPEED: 3.75,
   SCALE: 0.01,
   JUMP: {
-    VELOCITY: 7,
+    VELOCITY: 3.5,
     GRAVITY: 13,
   },
   COLLIDERS: {
@@ -31,16 +27,16 @@ export const SHARED_DEFAULTS = {
 
 export const PLAYER_DEFAULTS = {
   MODELS: {
-    IDLE: '/models/Player/SolarSentinel/Idle_60FPS.fbx',
-    WALK: '/models/Player/SolarSentinel/Walking_60FPS.fbx',
-    SWAY: '/models/Player/SolarSentinel/Sway_60FPS.fbx',
-    JUMP: '/models/Player/SolarSentinel/Jump_60FPS.fbx',
+    IDLE: '/models/Player/LadyKnight/Idle_60FPS.fbx',
+    WALK: '/models/Player/LadyKnight/Walk_60FPS.fbx',
+    SWAY: '/models/Player/LadyKnight/Sway_60FPS.fbx',
+    JUMP: '/models/Player/LadyKnight/Jump_60FPS.fbx',
   },
   TEXTURES: {
-    COLOR: '/models/Player/SolarSentinel/textures/color.png',
-    METALLIC: '/models/Player/SolarSentinel/textures/metallic.png',
-    NORMAL: '/models/Player/SolarSentinel/textures/normal.png',
-    ROUGHNESS: '/models/Player/SolarSentinel/textures/roughness.png',
+    COLOR:     '/models/Player/LadyKnight/textures/color.png',
+    METALLIC:  '/models/Player/LadyKnight/textures/metallic.png',
+    NORMAL:    '/models/Player/LadyKnight/textures/normal.png',
+    ROUGHNESS: '/models/Player/LadyKnight/textures/roughness.png',
   },
   IDLE_SWAY_DELAY: 3,
 };
@@ -67,12 +63,7 @@ export const CONTROLS_DEFAULTS = {
   },
 };
 
-export const BARBARIAN_DEFAULTS = {
-  MODEL: '/models/Barbarian/XBot.fbx',
-};
-
 export const GAME_DEFAULTS = {
-  INITIAL_BARBARIAN_COUNT: 1,
   PLAYER_MAX_HP: 100,
 };
 
@@ -121,38 +112,3 @@ export const ENVIRONMENT_DEFAULTS = {
   },
 };
 
-export const LEVA_THEMES = {
-  mobile: {
-    sizes: {
-      rootWidth: '210px',
-      controlWidth: '48px',
-      titleBarHeight: '24px',
-      rowHeight: '24px',
-    },
-    fontSizes: {
-      root: '9px',
-    },
-  },
-  tablet: {
-    sizes: {
-      rootWidth: '300px',
-      controlWidth: '72px',
-      titleBarHeight: '36px',
-      rowHeight: '30px',
-    },
-    fontSizes: {
-      root: '12px',
-    },
-  },
-  desktop: {
-    sizes: {
-      rootWidth: '360px',
-      controlWidth: '160px',
-      titleBarHeight: '40px',
-      rowHeight: '32px',
-    },
-    fontSizes: {
-      root: '12px',
-    },
-  },
-};
