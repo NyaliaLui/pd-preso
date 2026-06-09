@@ -63,6 +63,17 @@ export const CONTROLS_DEFAULTS = {
   },
 };
 
+export const ELEPHANT_DEFAULTS = {
+  MODEL: '/models/Enemy/ArmoredElephant.fbx',
+  TEXTURES: {
+    COLOR: '/models/Enemy/textures/color.png',
+    METALLIC: '/models/Enemy/textures/metallic.png',
+    NORMAL: '/models/Enemy/textures/normal.png',
+    ROUGHNESS: '/models/Enemy/textures/roughness.png',
+    EMISSION: '/models/Enemy/textures/emission.png',
+  },
+};
+
 export const GAME_DEFAULTS = {
   PLAYER_MAX_HP: 100,
 };

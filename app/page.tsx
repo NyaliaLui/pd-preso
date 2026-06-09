@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
 import { Player } from '@/app/components/Player/Player';
+import { Elephant } from '@/app/components/Enemy/Elephant';
 import { World } from '@/app/components/World/World';
 import { OrientationGuard } from '@/app/components/OrientationGuard';
 import { useKeyboardControls } from '@/app/components/Player/hooks/useKeyboardControls';
@@ -40,6 +41,10 @@ export default function Home() {
           intensity={ENVIRONMENT_DEFAULTS.directionalLight.intensity}
         />
         <Physics gravity={[0, -9.81, 0]}>
+          <Elephant
+            initialPosition={[5, 0.9, 0]}
+            playerPositionRef={playerPositionRef}
+          />
           <Player
             keys={keys}
             onHit={handlePlayerHit}
