@@ -33,9 +33,9 @@ export const PLAYER_DEFAULTS = {
     JUMP: '/models/Player/LadyKnight/Jump_60FPS.fbx',
   },
   TEXTURES: {
-    COLOR:     '/models/Player/LadyKnight/textures/color.png',
-    METALLIC:  '/models/Player/LadyKnight/textures/metallic.png',
-    NORMAL:    '/models/Player/LadyKnight/textures/normal.png',
+    COLOR: '/models/Player/LadyKnight/textures/color.png',
+    METALLIC: '/models/Player/LadyKnight/textures/metallic.png',
+    NORMAL: '/models/Player/LadyKnight/textures/normal.png',
     ROUGHNESS: '/models/Player/LadyKnight/textures/roughness.png',
   },
   IDLE_SWAY_DELAY: 3,
@@ -111,4 +111,3 @@ export const ENVIRONMENT_DEFAULTS = {
     sky: '/textures/sky.jpg',
   },
 };
-

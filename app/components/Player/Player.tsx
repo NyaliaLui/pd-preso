@@ -10,13 +10,8 @@ import {
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 
-import {
-  SHARED_DEFAULTS,
-  PLAYER_DEFAULTS,
-  GAME_DEFAULTS,
-} from '@/app/constants';
+import { SHARED_DEFAULTS, PLAYER_DEFAULTS } from '@/app/constants';
 import { KeyState } from '@/app/components/Player/hooks/useKeyboardControls';
-import type { ClientPlayerState } from '@/app/ai/sharedTypes';
 
 const PLAYER_GROUND_GROUPS = interactionGroups([5], [4]);
 
@@ -24,14 +19,9 @@ interface PlayerProps {
   keys: KeyState;
   onHit?: () => void;
   playerPositionRef?: { current: THREE.Vector3 };
-  playerStateRef?: { current: ClientPlayerState | null };
 }
 
-export function Player({
-  keys,
-  playerPositionRef,
-  playerStateRef,
-}: PlayerProps) {
+export function Player({ keys, playerPositionRef }: PlayerProps) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<THREE.Group>(null);
   const lastRotationRef = useRef<number>(Math.PI / 2);
@@ -47,7 +37,11 @@ export function Player({
   const idleClip = idleFbx.animations[0];
   const walkClip = walkFbx.animations[0];
   const swayClip = swayFbx.animations[0];
-  const jumpClip = jumpFbx.animations[0];
+  const jumpClip = useMemo(() => {
+    const clip = jumpFbx.animations[0].clone();
+    clip.tracks = clip.tracks.filter((t) => !t.name.endsWith('.scale'));
+    return clip;
+  }, [jumpFbx]);
 
   const model = useMemo(() => SkeletonUtils.clone(idleFbx), [idleFbx]);
 
@@ -217,23 +211,6 @@ export function Player({
       const t = rigidBodyRef.current.translation();
       if (playerPositionRef) {
         playerPositionRef.current.set(t.x, t.y, t.z);
-      }
-
-      if (playerStateRef) {
-        const v = rigidBodyRef.current.linvel?.() ?? { x: 0, y: 0, z: 0 };
-        playerStateRef.current = {
-          id: 'player-1',
-          position: { x: t.x, y: t.y, z: t.z },
-          velocity: { x: v.x, y: v.y, z: v.z },
-          hp: 0,
-          maxHp: GAME_DEFAULTS.PLAYER_MAX_HP,
-          facingDirection: lastRotationRef.current > 0 ? 1 : -1,
-          isAttacking: false,
-          attackType: null,
-          attackStartedAt: null,
-          isJumping: jumpingRef.current,
-          isCrouching: false,
-        };
       }
     }
   });
