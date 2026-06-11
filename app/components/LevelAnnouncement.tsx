@@ -18,7 +18,7 @@ export function LevelAnnouncement({ level }: LevelAnnouncementProps) {
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      setLabel('Game Start');
+      setLabel('SME Live');
     } else {
       setLabel(`Level ${level}`);
     }

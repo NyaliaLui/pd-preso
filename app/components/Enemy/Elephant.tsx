@@ -20,6 +20,9 @@ interface ElephantProps {
   isStationary?: boolean;
   bodyRef?: { current: RapierRigidBody | null };
   shake?: boolean;
+  animationIndex?: number;
+  walkingOff?: boolean;
+  modelScale?: number;
 }
 
 export function Elephant({
@@ -28,6 +31,9 @@ export function Elephant({
   isStationary = false,
   bodyRef,
   shake,
+  animationIndex = 0,
+  walkingOff = false,
+  modelScale,
 }: ElephantProps) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelGroupRef = useRef<THREE.Group>(null);
@@ -69,7 +75,7 @@ export function Elephant({
   const mixer = useRef<THREE.AnimationMixer | null>(null);
 
   useEffect(() => {
-    const clip = modelFbx.animations[0];
+    const clip = modelFbx.animations[animationIndex] ?? modelFbx.animations[0];
     if (!clip) return;
     const m = new THREE.AnimationMixer(model);
     mixer.current = m;
@@ -80,7 +86,7 @@ export function Elephant({
       m.stopAllAction();
       mixer.current = null;
     };
-  }, [model, modelFbx]);
+  }, [model, modelFbx, animationIndex]);
 
   useEffect(() => {
     return () => {
@@ -90,6 +96,22 @@ export function Elephant({
 
   useFrame((_state, delta) => {
     if (!rigidBodyRef.current) return;
+
+    if (walkingOff) {
+      const rapierVel = rigidBodyRef.current.linvel?.() ?? { x: 0, y: 0, z: 0 };
+      rigidBodyRef.current.setLinvel(
+        { x: SHARED_DEFAULTS.MOVE_SPEED, y: rapierVel.y, z: 0 },
+        true,
+      );
+      // Face right
+      const half = Math.PI / 4;
+      rigidBodyRef.current.setRotation(
+        { x: 0, y: Math.sin(half), z: 0, w: Math.cos(half) },
+        true,
+      );
+      if (mixer.current) mixer.current.update(delta);
+      return;
+    }
 
     if (isStationary) {
       const rapierVel = rigidBodyRef.current.linvel?.() ?? { x: 0, y: 0, z: 0 };
@@ -172,7 +194,7 @@ export function Elephant({
       <group ref={modelGroupRef}>
         <primitive
           object={model}
-          scale={SHARED_DEFAULTS.SCALE}
+          scale={modelScale ?? SHARED_DEFAULTS.SCALE}
           position={[0, -0.9, 0]}
         />
       </group>

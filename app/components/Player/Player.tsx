@@ -25,6 +25,8 @@ interface PlayerProps {
   playerPositionRef?: { current: THREE.Vector3 };
   mountRef?: { current: RapierRigidBody | null };
   shake?: boolean;
+  bodyRef?: { current: RapierRigidBody | null };
+  jumpVelocity?: number;
 }
 
 export function Player({
@@ -32,6 +34,8 @@ export function Player({
   playerPositionRef,
   mountRef,
   shake,
+  bodyRef,
+  jumpVelocity,
 }: PlayerProps) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<THREE.Group>(null);
@@ -44,10 +48,12 @@ export function Player({
   const walkFbx = useFBX(PLAYER_DEFAULTS.MODELS.WALK);
   const swayFbx = useFBX(PLAYER_DEFAULTS.MODELS.SWAY);
   const jumpFbx = useFBX(PLAYER_DEFAULTS.MODELS.JUMP);
+  const sitFbx = useFBX(PLAYER_DEFAULTS.MODELS.SIT);
 
   const idleClip = idleFbx.animations[0];
   const walkClip = walkFbx.animations[0];
   const swayClip = swayFbx.animations[0];
+  const sitClip = sitFbx.animations[0];
   const jumpClip = useMemo(() => {
     const clip = jumpFbx.animations[0].clone();
     clip.tracks = clip.tracks.filter((t) => !t.name.endsWith('.scale'));
@@ -150,11 +156,13 @@ export function Player({
           isSwayingRef.current = false;
         }
 
-        const clip = moving
-          ? walkClip
-          : isSwayingRef.current
-            ? swayClip
-            : idleClip;
+        const clip = mountRef?.current
+          ? sitClip
+          : moving
+            ? walkClip
+            : isSwayingRef.current
+              ? swayClip
+              : idleClip;
         const nextAction = m.clipAction(clip);
 
         if (currentActionRef.current !== nextAction) {
@@ -173,7 +181,7 @@ export function Player({
       if (mountRef?.current) {
         const et = mountRef.current.translation();
         rigidBodyRef.current.setTranslation(
-          { x: et.x, y: et.y + ELEPHANT_DEFAULTS.MOUNT_OFFSET, z: et.z },
+          { x: et.x, y: et.y + ELEPHANT_DEFAULTS.MOUNT_OFFSET * 1.5, z: et.z },
           true,
         );
         rigidBodyRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
@@ -195,7 +203,7 @@ export function Player({
         if (playerPositionRef) {
           playerPositionRef.current.set(
             et.x,
-            et.y + ELEPHANT_DEFAULTS.MOUNT_OFFSET,
+            et.y + ELEPHANT_DEFAULTS.MOUNT_OFFSET * 1.5,
             et.z,
           );
         }
@@ -240,7 +248,9 @@ export function Player({
           wasFallingRef.current = false;
         }
       }
-      velocity.y = jumpInitiated ? SHARED_DEFAULTS.JUMP.VELOCITY : rapierVel.y;
+      velocity.y = jumpInitiated
+        ? (jumpVelocity ?? SHARED_DEFAULTS.JUMP.VELOCITY)
+        : rapierVel.y;
 
       rigidBodyRef.current.setLinvel(velocity, true);
 
@@ -261,7 +271,10 @@ export function Player({
 
   return (
     <RigidBody
-      ref={rigidBodyRef}
+      ref={(body) => {
+        rigidBodyRef.current = body;
+        if (bodyRef) bodyRef.current = body;
+      }}
       type="dynamic"
       position={[0, 0.9, 0]}
       lockRotations
