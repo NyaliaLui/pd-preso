@@ -44,8 +44,7 @@ function World({ playerPositionRef }: WorldProps) {
   const blockXPositionsRef = useRef<number[]>(INITIAL_BLOCK_POSITIONS);
 
   useFrame(() => {
-    const playerX = playerPositionRef.current.x;
-    camera.position.x = playerX;
+    camera.position.x = playerPositionRef.current.x;
   });
 
   return (

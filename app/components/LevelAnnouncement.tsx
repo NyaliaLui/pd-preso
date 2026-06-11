@@ -7,19 +7,21 @@ interface LevelAnnouncementProps {
 export function LevelAnnouncement({ level }: LevelAnnouncementProps) {
   const [visible, setVisible] = useState(false);
   const [fading, setFading] = useState(false);
+  const [label, setLabel] = useState('');
   const isFirstRender = useRef(true);
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    // Clear any existing timers
     if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      setLabel('SME Live');
+    } else {
+      setLabel(`Level ${level}`);
+    }
 
     setVisible(true);
     setFading(false);
@@ -49,7 +51,7 @@ export function LevelAnnouncement({ level }: LevelAnnouncementProps) {
         data-testid="level-announcement-text"
         className="text-white text-7xl font-bold drop-shadow-lg"
       >
-        Level {level}
+        {label}
       </span>
     </div>
   );

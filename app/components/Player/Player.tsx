@@ -10,7 +10,11 @@ import {
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
 
-import { SHARED_DEFAULTS, PLAYER_DEFAULTS } from '@/app/constants';
+import {
+  SHARED_DEFAULTS,
+  PLAYER_DEFAULTS,
+  ELEPHANT_DEFAULTS,
+} from '@/app/constants';
 import { KeyState } from '@/app/components/Player/hooks/useKeyboardControls';
 
 const PLAYER_GROUND_GROUPS = interactionGroups([5], [4]);
@@ -19,9 +23,20 @@ interface PlayerProps {
   keys: KeyState;
   onHit?: () => void;
   playerPositionRef?: { current: THREE.Vector3 };
+  mountRef?: { current: RapierRigidBody | null };
+  shake?: boolean;
+  bodyRef?: { current: RapierRigidBody | null };
+  jumpVelocity?: number;
 }
 
-export function Player({ keys, playerPositionRef }: PlayerProps) {
+export function Player({
+  keys,
+  playerPositionRef,
+  mountRef,
+  shake,
+  bodyRef,
+  jumpVelocity,
+}: PlayerProps) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const modelRef = useRef<THREE.Group>(null);
   const lastRotationRef = useRef<number>(Math.PI / 2);
@@ -33,10 +48,12 @@ export function Player({ keys, playerPositionRef }: PlayerProps) {
   const walkFbx = useFBX(PLAYER_DEFAULTS.MODELS.WALK);
   const swayFbx = useFBX(PLAYER_DEFAULTS.MODELS.SWAY);
   const jumpFbx = useFBX(PLAYER_DEFAULTS.MODELS.JUMP);
+  const sitFbx = useFBX(PLAYER_DEFAULTS.MODELS.SIT);
 
   const idleClip = idleFbx.animations[0];
   const walkClip = walkFbx.animations[0];
   const swayClip = swayFbx.animations[0];
+  const sitClip = sitFbx.animations[0];
   const jumpClip = useMemo(() => {
     const clip = jumpFbx.animations[0].clone();
     clip.tracks = clip.tracks.filter((t) => !t.name.endsWith('.scale'));
@@ -74,6 +91,7 @@ export function Player({ keys, playerPositionRef }: PlayerProps) {
   const mixer = useRef<THREE.AnimationMixer | null>(null);
   const jumpingRef = useRef(false);
   const idleTimeRef = useRef(0);
+  const shakeTimeRef = useRef(0);
   const isSwayingRef = useRef(false);
   const currentActionRef = useRef<THREE.AnimationAction | null>(null);
   const isGroundedRef = useRef<boolean>(true);
@@ -132,17 +150,19 @@ export function Player({ keys, playerPositionRef }: PlayerProps) {
         if (!moving) {
           idleTimeRef.current += delta;
           isSwayingRef.current =
-            idleTimeRef.current >= PLAYER_DEFAULTS.IDLE_SWAY_DELAY;
+            !mountRef && idleTimeRef.current >= PLAYER_DEFAULTS.IDLE_SWAY_DELAY;
         } else {
           idleTimeRef.current = 0;
           isSwayingRef.current = false;
         }
 
-        const clip = moving
-          ? walkClip
-          : isSwayingRef.current
-            ? swayClip
-            : idleClip;
+        const clip = mountRef?.current
+          ? sitClip
+          : moving
+            ? walkClip
+            : isSwayingRef.current
+              ? swayClip
+              : idleClip;
         const nextAction = m.clipAction(clip);
 
         if (currentActionRef.current !== nextAction) {
@@ -158,6 +178,38 @@ export function Player({ keys, playerPositionRef }: PlayerProps) {
     }
 
     if (rigidBodyRef.current) {
+      if (mountRef?.current) {
+        const et = mountRef.current.translation();
+        rigidBodyRef.current.setTranslation(
+          { x: et.x, y: et.y + ELEPHANT_DEFAULTS.MOUNT_OFFSET * 1.5, z: et.z },
+          true,
+        );
+        rigidBodyRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
+        // 50% of full right-facing 90° = 45°
+        const mountHalf = Math.PI / 8;
+        rigidBodyRef.current.setRotation(
+          { x: 0, y: Math.sin(mountHalf), z: 0, w: Math.cos(mountHalf) },
+          true,
+        );
+        if (shake) {
+          shakeTimeRef.current += delta;
+          if (modelRef.current)
+            modelRef.current.position.x =
+              Math.sin(shakeTimeRef.current * 40) * 0.08;
+        } else {
+          shakeTimeRef.current = 0;
+          if (modelRef.current) modelRef.current.position.x = 0;
+        }
+        if (playerPositionRef) {
+          playerPositionRef.current.set(
+            et.x,
+            et.y + ELEPHANT_DEFAULTS.MOUNT_OFFSET * 1.5,
+            et.z,
+          );
+        }
+        return;
+      }
+
       const moveSpeed = SHARED_DEFAULTS.MOVE_SPEED;
       const velocity = { x: 0, y: 0, z: 0 };
 
@@ -196,7 +248,9 @@ export function Player({ keys, playerPositionRef }: PlayerProps) {
           wasFallingRef.current = false;
         }
       }
-      velocity.y = jumpInitiated ? SHARED_DEFAULTS.JUMP.VELOCITY : rapierVel.y;
+      velocity.y = jumpInitiated
+        ? (jumpVelocity ?? SHARED_DEFAULTS.JUMP.VELOCITY)
+        : rapierVel.y;
 
       rigidBodyRef.current.setLinvel(velocity, true);
 
@@ -217,7 +271,10 @@ export function Player({ keys, playerPositionRef }: PlayerProps) {
 
   return (
     <RigidBody
-      ref={rigidBodyRef}
+      ref={(body) => {
+        rigidBodyRef.current = body;
+        if (bodyRef) bodyRef.current = body;
+      }}
       type="dynamic"
       position={[0, 0.9, 0]}
       lockRotations

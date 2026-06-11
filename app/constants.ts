@@ -31,6 +31,7 @@ export const PLAYER_DEFAULTS = {
     WALK: '/models/Player/LadyKnight/Walk_60FPS.fbx',
     SWAY: '/models/Player/LadyKnight/Sway_60FPS.fbx',
     JUMP: '/models/Player/LadyKnight/Jump_60FPS.fbx',
+    SIT: '/models/Player/LadyKnight/Sit_60FPS.fbx',
   },
   TEXTURES: {
     COLOR: '/models/Player/LadyKnight/textures/color.png',
@@ -61,6 +62,18 @@ export const CONTROLS_DEFAULTS = {
     KNOB_RADIUS: 12,
     DEAD_ZONE: 0.1,
   },
+};
+
+export const ELEPHANT_DEFAULTS = {
+  MODEL: '/models/Enemy/ArmoredElephant.fbx',
+  TEXTURES: {
+    COLOR: '/models/Enemy/textures/color.png',
+    METALLIC: '/models/Enemy/textures/metallic.png',
+    NORMAL: '/models/Enemy/textures/normal.png',
+    ROUGHNESS: '/models/Enemy/textures/roughness.png',
+    EMISSION: '/models/Enemy/textures/emission.png',
+  },
+  MOUNT_OFFSET: 1.224,
 };
 
 export const GAME_DEFAULTS = {
