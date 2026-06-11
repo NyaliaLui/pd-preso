@@ -224,7 +224,6 @@ export default function Home() {
     // Show AI state instructions
     setShowLoading(true);
     const ALL_AMENITIES = [
-      'telephone',
       'steakhouse',
       'buffet',
       'show tickets',
