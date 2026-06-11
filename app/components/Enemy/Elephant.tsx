@@ -17,13 +17,21 @@ const ELEPHANT_GROUND_GROUPS = interactionGroups([5], [4]);
 interface ElephantProps {
   initialPosition?: [number, number, number];
   playerPositionRef?: { current: THREE.Vector3 };
+  isStationary?: boolean;
+  bodyRef?: { current: RapierRigidBody | null };
+  shake?: boolean;
 }
 
 export function Elephant({
   initialPosition = [5, 0.9, 0],
   playerPositionRef,
+  isStationary = false,
+  bodyRef,
+  shake,
 }: ElephantProps) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const modelGroupRef = useRef<THREE.Group>(null);
+  const shakeTimeRef = useRef(0);
 
   const directionRef = useRef(1);
   const lastSideRef = useRef<'left' | 'right'>('right');
@@ -83,6 +91,27 @@ export function Elephant({
   useFrame((_state, delta) => {
     if (!rigidBodyRef.current) return;
 
+    if (isStationary) {
+      const rapierVel = rigidBodyRef.current.linvel?.() ?? { x: 0, y: 0, z: 0 };
+      rigidBodyRef.current.setLinvel({ x: 0, y: rapierVel.y, z: 0 }, true);
+      const half = Math.PI / 4;
+      rigidBodyRef.current.setRotation(
+        { x: 0, y: Math.sin(half), z: 0, w: Math.cos(half) },
+        true,
+      );
+      if (shake) {
+        shakeTimeRef.current += delta;
+        if (modelGroupRef.current)
+          modelGroupRef.current.position.x =
+            Math.sin(shakeTimeRef.current * 40) * 0.08;
+      } else {
+        shakeTimeRef.current = 0;
+        if (modelGroupRef.current) modelGroupRef.current.position.x = 0;
+      }
+      if (mixer.current) mixer.current.update(delta);
+      return;
+    }
+
     const elephantX = rigidBodyRef.current.translation().x;
     const playerX = playerPositionRef?.current?.x ?? 0;
 
@@ -125,7 +154,10 @@ export function Elephant({
 
   return (
     <RigidBody
-      ref={rigidBodyRef}
+      ref={(body) => {
+        rigidBodyRef.current = body;
+        if (bodyRef) bodyRef.current = body;
+      }}
       type="dynamic"
       position={initialPosition}
       lockRotations
@@ -137,11 +169,13 @@ export function Elephant({
         position={[...SHARED_DEFAULTS.COLLIDERS.GROUND_SPHERE.position]}
         collisionGroups={ELEPHANT_GROUND_GROUPS}
       />
-      <primitive
-        object={model}
-        scale={SHARED_DEFAULTS.SCALE}
-        position={[0, -0.9, 0]}
-      />
+      <group ref={modelGroupRef}>
+        <primitive
+          object={model}
+          scale={SHARED_DEFAULTS.SCALE}
+          position={[0, -0.9, 0]}
+        />
+      </group>
     </RigidBody>
   );
 }

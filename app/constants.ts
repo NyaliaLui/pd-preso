@@ -72,6 +72,7 @@ export const ELEPHANT_DEFAULTS = {
     ROUGHNESS: '/models/Enemy/textures/roughness.png',
     EMISSION: '/models/Enemy/textures/emission.png',
   },
+  MOUNT_OFFSET: 1.224,
 };
 
 export const GAME_DEFAULTS = {
